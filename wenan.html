@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>花初锦遇短视频文案库</title>
+<style>
+  :root{
+    --bg:#101014; --panel:#15151b; --card:rgba(255,255,255,.025); --card-h:rgba(255,255,255,.05);
+    --ink:#ede9df; --sub:#96917f; --line:rgba(232,215,178,.14);
+    --gold:#d8c091; --gold2:#efe0bd;
+    --rose:#d9a3b4; --blue:#9db8d9; --green:#a9c6ad; --purple:#b7a6d9; --red:#d99a8f; --cyan:#9ec7c5;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;position:relative}
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(900px 500px at 50% -10%,rgba(216,192,145,.08),transparent),
+               radial-gradient(600px 400px at 0% 60%,rgba(157,184,217,.04),transparent),
+               radial-gradient(600px 400px at 100% 80%,rgba(217,163,180,.04),transparent)}
+  /* ===== 开场门面 ===== */
+  #gate{position:fixed;inset:0;z-index:500;background:radial-gradient(800px 500px at 50% 30%,#1c1a22,#0c0c10);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s ease,visibility .8s}
+  #gate.hide{opacity:0;visibility:hidden}
+  #gate .frame{position:relative;padding:60px 70px;text-align:center}
+  #gate .frame::before{content:"";position:absolute;inset:0;border:1px solid rgba(216,192,145,.35);border-radius:4px;pointer-events:none}
+  #gate .frame::after{content:"";position:absolute;inset:8px;border:1px solid rgba(216,192,145,.18);border-radius:2px;pointer-events:none}
+  #gate .moon{font-size:13px;letter-spacing:10px;color:var(--gold);opacity:.8;margin-bottom:26px}
+  #gate h1{font-family:"STSong","SimSun",serif;font-size:clamp(34px,7vw,56px);letter-spacing:16px;font-weight:700;
+    color:var(--gold2);text-shadow:0 2px 40px rgba(216,192,145,.35);margin-bottom:22px;text-indent:16px}
+  #gate .sub{font-size:13px;letter-spacing:6px;color:var(--sub);margin-bottom:44px;font-family:"STSong","SimSun",serif}
+  #gate .enter{background:transparent;border:1px solid var(--gold);color:var(--gold2);font-size:14px;letter-spacing:6px;
+    padding:13px 46px;cursor:pointer;transition:all .3s;font-family:"STSong","SimSun",serif;position:relative;z-index:2;overflow:hidden}
+  #gate .enter:hover{background:rgba(216,192,145,.12);letter-spacing:8px;box-shadow:0 0 30px rgba(216,192,145,.2)}
+  #gate .orn{color:var(--gold);opacity:.6;margin-top:34px;font-size:12px;letter-spacing:6px}
+  #gate .shine{position:absolute;top:0;left:-60%;width:40%;height:100%;transform:skewX(-20deg);pointer-events:none;z-index:1;
+    background:linear-gradient(90deg,transparent,rgba(239,224,189,.06),transparent);animation:shine 3.2s ease-in-out infinite}
+  @keyframes shine{0%{left:-60%}60%,100%{left:130%}}
+  /* ===== 主体 ===== */
+  .hero{position:relative;text-align:center;padding:52px 16px 36px;background:linear-gradient(180deg,#17171e,#101014);overflow:hidden}
+  .hero::after{content:"❦";position:absolute;top:20px;left:50%;transform:translateX(-50%);color:var(--gold);opacity:.5;font-size:18px;letter-spacing:8px}
+  .hero h1{font-size:30px;letter-spacing:10px;font-weight:700;color:var(--gold2);
+    font-family:"STSong","SimSun",serif;text-shadow:0 2px 30px rgba(216,192,145,.25)}
+  .hero .rule{width:180px;height:1px;margin:20px auto 0;background:linear-gradient(90deg,transparent,var(--gold),transparent);position:relative}
+  .hero .rule i{position:absolute;left:50%;top:-4px;transform:translateX(-50%);color:var(--gold);font-size:9px;font-style:normal;background:#17171e;padding:0 8px}
+  .hero p{color:var(--sub);font-size:13px;margin-top:16px;letter-spacing:4px;font-family:"STSong","SimSun",serif}
+  .bar{position:sticky;top:0;z-index:40;background:rgba(16,16,20,.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .bar input{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:2px;padding:9px 15px;color:var(--ink);font-size:14px;outline:none;width:230px}
+  .bar input:focus{border-color:var(--gold)}
+  .chip{padding:7px 16px;border-radius:2px;font-size:13px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--sub);font-weight:500;transition:all .18s;letter-spacing:1px}
+  .chip:hover{border-color:var(--gold);color:var(--gold2)}
+  .chip.on{background:rgba(216,192,145,.1);border-color:var(--gold);color:var(--gold2)}
+  .wrap{max-width:1150px;margin:0 auto;padding:22px 16px 100px;position:relative;z-index:1}
+  .sec{margin-top:22px}
+  .sec-box{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:14px 16px}
+  .sec-hd{cursor:pointer;user-select:none;text-align:center;padding:8px 0 2px;transition:opacity .15s}
+  .sec-hd:hover{opacity:.75}
+  .sec-hd h2{font-size:18px;letter-spacing:5px;display:inline-block;
+    font-family:"STSong","SimSun",serif;color:var(--gold2);font-weight:700}
+  .sec-hd .arr{display:inline-block;margin-right:10px;color:var(--gold);font-size:13px;transition:transform .25s;transform:rotate(-90deg)}
+  .sec.open .sec-hd .arr{transform:rotate(0)}
+  .sec-bd{display:none;animation:slideDown .25s ease}
+  .sec.open .sec-bd{display:block}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .sec .rule2{width:60px;height:1px;margin:8px auto 10px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+  .sec .cnt{font-size:11px;color:var(--sub);font-weight:400;margin-left:8px;letter-spacing:1px}
+  .sec .tip{font-size:12px;color:var(--sub);margin-bottom:14px;line-height:1.7;text-align:center}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+  .copycard{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:15px 16px;position:relative;transition:all .2s;cursor:pointer}
+  .copycard::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ac,var(--gold)),transparent);opacity:0;transition:opacity .2s}
+  .copycard:hover{transform:translateY(-2px);border-color:var(--ac,var(--gold));background:var(--card-h);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .copycard:hover::before{opacity:1}
+  .copycard .meta{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .copycard .tag{font-size:10px;color:var(--ac,var(--gold));border:none;border-bottom:1px solid var(--ac,var(--gold));border-radius:0;padding:1px 2px;letter-spacing:2px;cursor:pointer}
+  .copycard .tag:hover{color:var(--gold2)}
+  .copycard .cp{margin-left:auto;font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:2px;padding:3px 11px;cursor:pointer;background:transparent;letter-spacing:1px}
+  .copycard .cp:hover{color:var(--gold2);border-color:var(--gold)}
+  .copycard .del{font-size:11px;color:#b06a5e;cursor:pointer;opacity:.55;padding:2px}
+  .copycard .del:hover{opacity:1;color:#d98a7c}
+  .copycard .body{font-size:14px;line-height:1.9;color:#ddd8cc;white-space:pre-wrap}
+  .addbar{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+  .addbar select,.addbar input{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:3px;padding:9px 11px;color:var(--ink);font-size:13px;outline:none}
+  .addbar select:focus,.addbar input:focus{border-color:var(--gold)}
+  .addbar .tagin{width:120px}
+  .addbar textarea{flex:1;min-width:220px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:3px;padding:10px 12px;color:var(--ink);font-size:13px;outline:none;resize:vertical;min-height:44px;font-family:inherit}
+  .addbar textarea:focus{border-color:var(--gold)}
+  .addbar button{background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:3px;padding:0 20px;font-weight:600;font-size:13px;cursor:pointer;letter-spacing:2px}
+  .addbar button:hover{background:rgba(216,192,145,.1)}
+  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1c1b22;color:var(--gold2);border:1px solid var(--gold);border-radius:2px;padding:8px 22px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:200;letter-spacing:1px}
+  .toast.show{opacity:1}
+  .empty{text-align:center;color:var(--sub);padding:60px 0}
+  @media(max-width:620px){.hero h1{font-size:22px;letter-spacing:6px}.grid{grid-template-columns:1fr}#gate .frame{padding:40px 26px}#gate h1{letter-spacing:10px}}
+</style>
+</head>
+<body>
+
+<!-- 开场门面 -->
+<div id="gate">
+  <div class="frame">
+    <div class="shine"></div>
+    <div class="mono">HUA CHU JIN YU</div>
+    <h1>花初锦遇</h1>
+    <div class="sub">短视频文案库 · 私享版</div>
+    <button class="enter" onclick="enterLib()">进 入 文 库</button>
+    <div class="orn">─── ✦ ───</div>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>花初锦遇短视频文案库</h1>
+  <div class="rule"><i>◆</i></div>
+  <p>素材文案 · 随取随用 · 点击即复制</p>
+</div>
+
+<div class="bar">
+  <input id="q" placeholder="搜索文案关键词…">
+  <span class="chip on" data-f="all">全部</span>
+  <span class="chip" data-f="hook">① 钩子开头</span>
+  <span class="chip" data-f="pain">② 痛点共鸣</span>
+  <span class="chip" data-f="sell">③ 卖点种草</span>
+  <span class="chip" data-f="trust">④ 信任打消</span>
+  <span class="chip" data-f="cta">⑤ 促单CTA</span>
+  <span class="chip" data-f="title">⑥ 投放标题</span>
+  <span class="chip" data-f="comment">⑦ 评论区运营</span>
+  <span class="chip" data-f="full">⑧ 完整口播</span>
+</div>
+
+<div class="wrap" id="list"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+function enterLib(){
+  var g=document.getElementById("gate");
+  g.className="hide";
+  setTimeout(function(){g.style.display="none";},850);
+}
+var D=[
+{f:"hook",tag:"痛点式",t:"内裤腰头总是卷边的姐妹看过来！这条看完再买，能帮你避开十块钱的坑。"},
+{f:"hook",tag:"痛点式",t:"脱下内裤腰上一圈红印的姐妹，进来！那不是你肉多，是你内裤的腰头不行。"},
+{f:"hook",tag:"提问式",t:"你们买轻塑内裤，会先看哪个地方？评论区说的最多的居然不是收腹，是腰头。"},
+{f:"hook",tag:"反常识式",t:"收腹裤的「轻」不是没效果，是力用对了位置——今天给你看什么叫交叉分区加压。"},
+{f:"hook",tag:"反常识式",t:"内裤好不好，翻过来看腰头就知道了，行家都这么挑。"},
+{f:"hook",tag:"对比式",t:"普通腰头和交叉加压腰头，同样穿一天，差别到底在哪？看对比。"},
+{f:"hook",tag:"悬念式",t:"这条内裤的腰头，为什么要做成蝴蝶结？不是装饰，答案在后面。"},
+{f:"hook",tag:"数字式",t:"一条轻塑内裤，藏着7个设计细节，我只讲3个最值钱的。"},
+{f:"hook",tag:"场景式",t:"久坐一天的姐妹才知道，下班回家腰头还服帖在内裤本来的位置，是多幸福的事。"},
+{f:"hook",tag:"好奇式",t:"你见过把蝴蝶结做进加压结构里的内裤吗？这个设计让我多囤了三条。"},
+{f:"pain",tag:"卷边下滑",t:"普通腰头穿半天就卷边往下滑，一路上都在厕所整理，这条反包氨纶胶腰头，弹力足，穿一整天不卷边不下滑。"},
+{f:"pain",tag:"勒痕",t:"以前穿的收腹裤，下班脱下来腰上一圈红印，火辣辣的。这条是分段式双层加压，收得住肚子但不勒肉，脱下来皮肤是平的。"},
+{f:"pain",tag:"坐下分层",t:"坐下小肚子挤成两截，侧面最尴尬。它这个蝴蝶结加压带就是对着小肚子来的，坐一整天也平平整整。"},
+{f:"pain",tag:"闷热扎肤",t:"廉价蕾丝内裤又扎又闷，私密处不舒服一整天。底裆是10A抑菌桑蚕丝，透气干爽，敏感肌也能穿。"},
+{f:"pain",tag:"显肚子",t:"紧身裙一穿，小肚子全暴露。穿上它之后肚子收平了，裙子的线条一下就出来了。"},
+{f:"pain",tag:"洗后变形",t:"有的内裤洗两次腰头就松垮，这条反包胶腰头洗二十次照样有弹性，耐穿是真的。"},
+{f:"sell",tag:"腰头结构",t:"腰头是小腰封结构，分段式双层加压带，肚子的位置专门加压收小肚腩，臀线的位置是提拉包裹，收哪里、提哪里，分得清清楚楚。"},
+{f:"sell",tag:"蝴蝶结设计",t:"腹部这个蝴蝶结不是缝上去好看的，它就是加压带的造型，装饰和收腹二合一，这才是它的聪明之处。"},
+{f:"sell",tag:"面料",t:"面料是空气夹层奶皮，摸起来像婴儿皮肤，夹层透气不闷汗，一年四季都能穿。"},
+{f:"sell",tag:"提臀",t:"3D立体大包臀版型，提前预留臀部容量，包容各种臀型，提拉圆润蜜桃臀，还不压臀。"},
+{f:"sell",tag:"底裆",t:"底裆是加长加宽的10A抑菌桑蚕丝，稳稳兜住分泌物，清洗也省心，健康这块拉满。"},
+{f:"sell",tag:"隐形无痕",t:"特调粉底液肤色，白色裙裤里穿完全不透；侧缝脚口密缝弹力车缝，紧身裙、贴身打底里隐形无痕。"},
+{f:"sell",tag:"尺码",t:"L码90-120斤、XL码120-140斤、XXL码140-160斤，五个颜色，大码姐妹也能穿出舒服的塑形感。"},
+{f:"trust",tag:"怕勒",t:"怕勒的姐妹放心：它叫轻塑不叫重压，加压是分层的，不搞一圈硬勒那一套，体感更像穿了条舒服的高腰内裤。"},
+{f:"trust",tag:"怕卷边",t:"腰头反包了氨纶胶，拉伸回弹给你看——拉出去、弹回来，反复水洗也不容易松垮卷边。"},
+{f:"trust",tag:"怕闷",t:"空气层夹层是一体织的，无复合粘合、不开胶、不脱层，湿气热气秒速排出，久坐也不闷。"},
+{f:"trust",tag:"怕假",t:"底裆是货真价实的桑蚕丝，含10A级抑菌，细节车缝密实，收到货你自己摸一摸就知道档次。"},
+{f:"trust",tag:"怕不合适",t:"拿不准尺码的姐妹按体重拍：90-120拍L，120-140拍XL，140-160拍XXL，弹力大有富余。"},
+{f:"cta",tag:"囤货型",t:"内裤这东西是消耗品，建议直接拍三条装：一个色换着穿，洗晒周转都从容，算下来比单拍划算。"},
+{f:"cta",tag:"送人型",t:"自留一条，闺蜜送两条，包装拿出去不丢档次，收到的人以为是轻奢牌。"},
+{f:"cta",tag:"颜色型",t:"五个颜色都好看：经典黑百搭、枫叶橘显白、柔粉色少女、粉底液肤色隐形、巧克力高级——建议凑色，别纠结。"},
+{f:"cta",tag:"紧迫型",t:"这个腰头工艺成本高，库存不多，看中的姐妹直接拍，别加购，加购容易忘。"},
+{f:"cta",tag:"零风险型",t:"不确定合不合适的，先拍一条回来试穿，腰头弹力大，110-160斤都能穿，不合适退运费险也覆盖。"},
+{f:"title",tag:"卖点型",t:"好腰头，收得住肚子，稳得住位置，勒不红皮肤"},
+{f:"title",tag:"卖点型",t:"交叉分区加压｜腰腹轻塑 臀部提拉 日常舒适"},
+{f:"title",tag:"人群型",t:"90-160斤姐妹的轻塑内裤｜久坐党亲测不卷边"},
+{f:"title",tag:"场景型",t:"穿紧身裙不显肚子｜粉底液肤色隐形内裤"},
+{f:"title",tag:"颜值型",t:"星点提花蝴蝶结｜颜值和实力并存的轻塑内裤"},
+{f:"title",tag:"信任型",t:"桑蚕丝10A抑菌底裆｜像穿内裤一样舒服的收腹裤"},
+{f:"comment",tag:"置顶引导",t:"姐妹们最关心的问题汇总：怕勒的看4楼，尺码看8楼，颜色实拍在18楼～有其他问题直接问我，在线回！"},
+{f:"comment",tag:"疑问回复",t:"回复「勒不勒」：不硬勒！它是分段加压，收腹的力在肚子那层，腰部是弹力反包胶，主播120斤穿XL实测坐一天无红印。"},
+{f:"comment",tag:"疑问回复",t:"回复「尺码」：按体重拍就行，L=90-120斤，XL=120-140斤，XXL=140-160斤，腰头弹力大有富余，两个码之间拍小码。"},
+{f:"comment",tag:"疑问回复",t:"回复「白色裤子透不透」：粉底液肤色那款就是特调给白裙白裤用的，亲测不透色。"},
+{f:"comment",tag:"引导追评",t:"收到货的姐妹回来交作业呀～说说腰头卷不卷边、收腹效果打几分，你们的真实反馈是我们改进的方向🙏"},
+{f:"full",tag:"痛点开场",t:"姐妹们，内裤腰头卷边的举个手！\n普通腰头穿半天就往下滑，勒出红印还收不住肚子。\n这条不一样：腰头是小腰封分段加压，肚子这块双层加压收小肚腩，蝴蝶结就是加压带本身，不是装饰。\n反包氨纶胶，弹力足不卷边，久坐一天腰头还在原位。\n底裆10A抑菌桑蚕丝，透气干爽。\n90到160斤都有码，五个颜色，直接拍！"},
+{f:"full",tag:"对比开场",t:"左边这条，普通腰头，坐下分层、卷边、勒痕全占了；\n右边这条，交叉分区加压腰头——肚子单独收，臀部单独提。\n面料是空气层奶皮，软糯亲肤不闷汗。\n关键是穿一天像没穿，塑形裤的效果、内裤的舒服。\n紧身裙里隐形无痕，白色裤子里不透色。\n链接拍起来，建议直接囤三条！"},
+{f:"full",tag:"剧情开场",t:"我闺蜜昨天问我：穿紧身裙显不显肚子？\n我说你内裤穿对了就不显。\n给她寄了这条蝴蝶结轻塑：交叉加压收腰腹，3D包臀提臀线，粉底液肤色穿白裙都隐形。\n她今天来问我链接……姐妹们直接拍，别学她等。"}
+];
+for(var _i=0;_i<D.length;_i++){D[_i].id=D[_i].f+"_"+_i;}
+
+var SECNAME={hook:"① 钩子开头",pain:"② 痛点共鸣",sell:"③ 卖点种草",trust:"④ 信任打消",cta:"⑤ 促单CTA",title:"⑥ 投放标题",comment:"⑦ 评论区运营",full:"⑧ 完整口播"};
+var SECTIP={hook:"前三秒抓人，决定点击率。同卖点换不同钩子跑测试。",pain:"让观众「说的是我」，接住钩子往后看。",sell:"一条视频聚焦1-2个卖点就够了。",trust:"打消下单顾虑，放中后段。",cta:"临门一脚，给个「现在拍」的理由。",title:"千川标题+搜索标题，20字内，一素材一标题。",comment:"评论区也是转化位，提前备好置顶+回复话术。",full:"整条口播直接照念，配分镜使用。"};
+var TAGS={
+hook:["痛点式","提问式","反常识式","对比式","悬念式","数字式","视觉式","情绪式","场景式","好奇式","福利式","身份点名式"],
+pain:["卷边下滑","勒痕","坐下分层","闷热扎肤","显肚子","洗后变形","卡大腿","尺码焦虑","价格顾虑"],
+sell:["腰头结构","蝴蝶结设计","面料","提臀","底裆","隐形无痕","尺码","颜色","抑菌","透气"],
+trust:["怕勒","怕卷边","怕闷","怕假","怕不合适","怕不好看"],
+cta:["囤货型","送人型","颜色型","紧迫型","零风险型","组合型","直播逼单型"],
+title:["卖点型","人群型","场景型","颜值型","信任型","价格型","活动型"],
+comment:["置顶引导","疑问回复","引导追评","差评应对","氛围组"],
+full:["痛点开场","对比开场","剧情开场","福利开场","测评开场","一镜到底"]
+};
+
+var KEY="qianchuan_copy_v2",DELKEY="qianchuan_del_v2",TRASHKEY="qianchuan_trash_v2",OVRKEY="qianchuan_tagovr_v1",SKEY="qianchuan_sec_open_v2";
+var custom=[],deleted={},trash={},tagOvr={},secOpen={};
+try{custom=JSON.parse(localStorage.getItem(KEY)||"[]");}catch(e){custom=[];}
+try{deleted=JSON.parse(localStorage.getItem(DELKEY)||"{}");}catch(e){deleted={};}
+try{trash=JSON.parse(localStorage.getItem(TRASHKEY)||"{}");}catch(e){trash={};}
+try{tagOvr=JSON.parse(localStorage.getItem(OVRKEY)||"{}");}catch(e){tagOvr={};}
+try{secOpen=JSON.parse(localStorage.getItem(SKEY)||"{}");}catch(e){secOpen={};}
+var filter="all",kw="",trashOpen={},renderList=[];
+
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.className="toast show";setTimeout(function(){t.className="toast";},1600);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+function persist(){localStorage.setItem(KEY,JSON.stringify(custom));}
+function persistDel(){localStorage.setItem(DELKEY,JSON.stringify(deleted));}
+function persistTrash(){localStorage.setItem(TRASHKEY,JSON.stringify(trash));}
+function persistOvr(){localStorage.setItem(OVRKEY,JSON.stringify(tagOvr));}
+function tagOf(it){
+  if(it.cid)return (custom[it.cid]&&custom[it.cid].tag)||it.tag||"自定义";
+  return tagOvr[it.id]||it.tag;
+}
+function allOf(f){
+  var a=[];
+  for(var i=0;i<D.length;i++){var it=D[i];if(it.f!==f)continue;if(deleted[it.id])continue;a.push({item:it,ci:-1});}
+  for(var j=0;j<custom.length;j++){if(custom[j].f===f){a.push({item:custom[j],ci:j});}}
+  return a;
+}
+function copyText(s){
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(s).then(function(){toast("已复制 ✅");},function(){fallback(s);});}
+  else fallback(s);
+}
+function fallback(s){
+  var ta=document.createElement("textarea");ta.value=s;document.body.appendChild(ta);ta.select();
+  try{document.execCommand("copy");toast("已复制 ✅");}catch(e){toast("复制失败，请手动选择");}
+  document.body.removeChild(ta);
+}
+function cardHTML(x,orderIdx){
+  var it=x.item;
+  var tag=tagOf(it);
+  return '<div class="copycard" style="--ac:var(--gold)" onclick="copyText(this.querySelector(\'.body\').textContent)">'+
+    '<div class="meta"><span class="tag" title="点击修改分类标签" onclick="editTag(event,'+orderIdx+')">❀ '+esc(tag)+'</span>'+
+    '<span class="del" title="删除（可撤回）" onclick="delCard(event,'+orderIdx+')">✕</span>'+
+    '<span class="cp" onclick="copyText(this.closest(\'.copycard\').querySelector(\'.body\').textContent);event.stopPropagation();">复制</span></div>'+
+    '<div class="body">'+esc(it.t)+'</div></div>';
+}
+function editTag(ev,orderIdx){
+  if(ev.stopPropagation)ev.stopPropagation();
+  var x=renderList[orderIdx];if(!x)return;
+  var nv=prompt("修改这条文案的分类标签：",tagOf(x.item));
+  if(nv===null)return;
+  nv=nv.replace(/^\s+|\s+$/g,"");
+  if(!nv)return;
+  if(x.ci>=0){custom[x.ci].tag=nv;persist();}
+  else{tagOvr[x.item.id]=nv;persistOvr();}
+  render();toast("标签已更新 ✅");
+}
+function delCard(ev,orderIdx){
+  if(ev.stopPropagation)ev.stopPropagation();
+  var x=renderList[orderIdx];if(!x)return;
+  var f=x.item.f;
+  trash[f]=trash[f]||[];
+  if(x.ci>=0){
+    trash[f].push({tag:tagOf(x.item),t:x.item.t,custom:true});
+    custom.splice(x.ci,1);persist();
+  }else{
+    deleted[x.item.id]=1;persistDel();
+    trash[f].push({pid:x.item.id,t:x.item.t,tag:tagOf(x.item),custom:false});
+    persistTrash();
+  }
+  render();toast("已删除，可在分区下方回收站撤回");
+}
+function restore(f,i){
+  var arr=trash[f]||[];var x=arr[i];if(!x)return;
+  if(x.custom){custom.push({f:f,tag:x.tag,t:x.t});persist();}
+  else{delete deleted[x.pid];persistDel();}
+  arr.splice(i,1);if(!arr.lengtg)delete trash[f];
+  persistTrash();render();toast("已恢复 ✅");
+}
+function purge(f){if(confirm("彻底清空该分区回收站？将无法恢复。")){delete trash[f];persistTrash();render();}}
+function toggleTrash(f,ev){if(ev&&ev.stopPropagation)ev.stopPropagation();trashOpen[f]=!trashOpen[f];render();}
+function toggleSec(f){
+  secOpen[f]=(secOpen[f]===false)?true:false;
+  localStorage.setItem(SKEY,JSON.stringify(secOpen));
+  var el=document.getElementById("sec_"+f);
+  el.className=secOpen[f]?"sec open":"sec";
+}
+function tagSelectHTML(f){
+  var opts='<option value="">— 选标签 —</option>';
+  var tg=TAGS[f]||[];
+  for(var i=0;i<tg.length;i++){opts+='<option value="'+esc(tg[i])+'">'+esc(tg[i])+'</option>';}
+  opts+='<option value="__custom">✏️ 自定义…</option>';
+  return opts;
+}
+function addCustom(f){
+  var ta=document.getElementById("ta_"+f);
+  var sel=document.getElementById("tag_"+f);
+  var tin=document.getElementById("tagin_"+f);
+  var v=(ta.value||"").replace(/^\s+|\s+$/g,"");
+  if(!v){toast("先写文案内容再点加入");return;}
+  var tag=sel.value;
+  if(tag==="__custom")tag=(tin.value||"").replace(/^\s+|\s+$/g,"");
+  if(!tag){toast("选一个标签，或填自定义标签");return;}
+  custom.push({f:f,tag:tag,t:v});
+  persist();render();toast("已加入「"+tag+"」✅");
+}
+function render(){
+  var groups=["hook","pain","sell","trust","cta","title","comment","full"];
+  var html="",total=0;renderList=[];
+  for(var g=0;g<groups.length;g++){
+    var f=groups[g];
+    if(filter!=="all"&&filter!==f)continue;
+    var items=allOf(f);
+    var vis=[];
+    for(var i=0;i<items.length;i++){
+      var it=items[i].item;
+      if(kw&&(it.t+" "+tagOf(it)).toLowerCase().indexOf(kw)<0)continue;
+      vis.push({item:it,ci:items[i].ci});
+    }
+    if(!vis.length)continue;
+    total+=vis.length;
+    var open=secOpen[f]!==false;
+    html+='<div class="sec'+(open?" open":"")+'" id="sec_'+f+'"><div class="sec-box">'+
+      '<div class="sec-hd" onclick="toggleSec(\''+f+'\')"><span class="arr">▾</span><h2>'+SECNAME[f]+'<span class="cnt">'+vis.length+' 条</span></h2></div>'+
+      '<div class="rule2"></div><div class="sec-bd">'+
+      '<div class="tip">'+SECTIP[f]+'</div><div class="grid">';
+    for(var k=0;k<vis.length;k++){var oi=renderList.length;renderList.push({item:vis[k].item,ci:vis[k].ci});html+=cardHTML(vis[k],oi);}
+    html+='</div>';
+    var tn=trash[f]||[];
+    if(tn.length){
+      html+='<div style="margin-top:10px"><span class="chip" onclick="toggleTrash(\''+f+'\',event)">🗑 回收站（'+tn.length+'）'+(trashOpen[f]?" ▲":" ▼")+'</span>';
+      if(trashOpen[f]){
+        html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">';
+        for(var ti=0;ti<tn.length;ti++){
+          html+='<span class="chip" onclick="restore(\''+f+'\','+ti+',event)">'+esc(tn[ti].tag+"｜"+tn[ti].t.slice(0,12)+(tn[ti].t.length>12?"…":""))+' ↩︎恢复</span>';
+        }
+        html+='<span class="chip" style="color:#d98a7c;border-color:#4a3230" onclick="purge(\''+f+'\');event.stopPropagation();">清空回收站</span></div>';
+      }
+      html+='</div>';
+    }
+    html+='<div class="addbar">'+
+      '<select id="tag_'+f+'" onchange="document.getElementById(\'tagin_'+f+'\').style.display=this.value===\'__custom\'?\'block\':\'none\'">'+tagSelectHTML(f)+'</select>'+
+      '<input class="tagin" id="tagin_'+f+'" placeholder="自定义标签名" style="display:none">'+
+      '<textarea id="ta_'+f+'" placeholder="写一条新文案，选好标签后点加入…"></textarea>'+
+      '<button onclick="addCustom(\''+f+'\')">＋加入</button></div>'+
+      '</div></div>';
+  }
+  if(!total)html='<div class="empty">没有匹配的文案</div>';
+  document.getElementById("list").innerHTML=html;
+}
+var chips=document.querySelectorAll(".chip");
+for(var i=0;i<chips.length;i++){
+  chips[i].onclick=function(){
+    for(var k=0;k<chips.length;k++)chips[k].className="chip";
+    this.className="chip on";filter=this.getAttribute("data-f");render();
+  };
+}
+document.getElementById("q").oninput=function(e){kw=e.target.value.toLowerCase();render();};
+render();
+</script>
+</body>
+</html>
