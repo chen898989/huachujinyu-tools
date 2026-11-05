@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>电影镜头图鉴 PRO</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0a0a10;color:#f2eee6;min-height:100vh}
+  a{color:#e8b34b}
+  /* HERO */
+  .hero{position:relative;text-align:center;padding:60px 16px 40px;background:linear-gradient(180deg,#161020,#0a0a10)}
+  .hero h1{font-size:34px;letter-spacing:10px;font-weight:900;color:#f5d98a;text-shadow:0 0 40px rgba(232,179,75,.35)}
+  .hero p{color:#8d8da3;font-size:13px;margin-top:14px;letter-spacing:3px}
+  .stats{display:flex;gap:30px;justify-content:center;margin-top:20px}
+  .stats div b{display:block;font-size:24px;color:#e8b34b}
+  .stats div span{font-size:11px;color:#8d8da3}
+  /* 工具条 */
+  .bar{position:sticky;top:0;z-index:40;background:rgba(10,10,16,.92);border-bottom:1px solid #222232;padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .bar input{background:#171722;border:1px solid #2c2c40;border-radius:20px;padding:9px 15px;color:#f2eee6;font-size:14px;outline:none;width:230px}
+  .bar input:focus{border-color:#e8b34b}
+  .chip{padding:8px 15px;border-radius:20px;font-size:13px;cursor:pointer;border:1px solid #2c2c40;background:#171722;color:#9a9ab0;font-weight:600}
+  .chip.on{background:rgba(232,179,75,.16);border-color:#e8b34b;color:#f5d98a}
+  /* 主体 */
+  .wrap{max-width:1200px;margin:0 auto;padding:20px 16px 80px}
+  .sec{margin-top:32px}
+  .sec h2{font-size:20px;letter-spacing:4px;padding-left:12px;border-left:4px solid #e8b34b;margin-bottom:14px}
+  .sec .cnt{font-size:12px;color:#8d8da3;font-weight:400;margin-left:8px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+  .card{background:#14141f;border:1px solid #23233a;border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .2s,border-color .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-3px);border-color:var(--ac,#e8b34b);box-shadow:0 10px 30px rgba(0,0,0,.55)}
+  /* 视频位 */
+  .vslot{position:relative;width:100%;padding-top:56%;background:#0d0d15;border-bottom:1px solid #23233a}
+  .vslot iframe,.vslot video{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+  .vempty{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#6b6b85;
+    background:repeating-linear-gradient(45deg,#111119 0 14px,#0d0d15 14px 28px)}
+  .vempty .play{width:44px;height:44px;border-radius:50%;border:2px solid var(--ac,#e8b34b);color:var(--ac,#e8b34b);display:flex;align-items:center;justify-content:center;font-size:15px}
+  .vempty .txt{font-size:11px}
+  .vtag{position:absolute;top:8px;left:8px;z-index:3;font-size:10px;background:rgba(0,0,0,.65);border:1px solid var(--ac,#e8b34b);color:var(--ac,#e8b34b);border-radius:6px;padding:2px 8px}
+  .vedit{position:absolute;top:8px;right:8px;z-index:4;font-size:11px;background:rgba(0,0,0,.7);border:1px solid #3a3a55;color:#9a9ab0;border-radius:6px;padding:4px 9px;cursor:pointer}
+  .vedit:hover{color:#f5d98a;border-color:#e8b34b}
+  /* 卡片文字 */
+  .cbody{padding:13px 15px 15px}
+  .cbody .no{font-size:10px;color:var(--ac,#e8b34b);letter-spacing:2px;font-weight:700}
+  .cbody h3{font-size:16px;font-weight:800;margin:4px 0 2px}
+  .cbody .en-name{font-size:11px;color:#8d8da3;margin-bottom:7px;letter-spacing:1px}
+  .cbody p{font-size:13px;color:#c6c2ba;line-height:1.7}
+  .use{display:inline-block;margin-top:10px;font-size:12px;font-weight:600;border-radius:8px;padding:5px 10px}
+  /* 弹窗 */
+  .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(4,4,8,.85);display:none;align-items:center;justify-content:center;z-index:100;padding:16px}
+  .modal.show{display:flex}
+  .mbox{background:#13131d;border:1px solid #e8b34b;border-radius:16px;max-width:640px;width:100%;padding:22px;max-height:90vh;overflow:auto}
+  .mbox h3{font-size:21px;color:#f5d98a}
+  .mbox .en{color:#8d8da3;font-size:12px;margin:4px 0 12px}
+  .mvideo{position:relative;width:100%;padding-top:56%;background:#0d0d15;border-radius:10px;overflow:hidden;margin-bottom:6px}
+  .mvideo iframe,.mvideo video{position:absolute;top:0;left:0;width:100%;height:100%;border:0}
+  .mbox dt{font-size:13px;color:#e8b34b;font-weight:700;margin-top:12px}
+  .mbox dd{font-size:14px;color:#d5d1c9;line-height:1.75;margin-top:3px}
+  .mbox .close{margin-top:16px;width:100%;background:#e8b34b;color:#1a1206;border:none;border-radius:10px;padding:11px;font-weight:800;font-size:14px;cursor:pointer}
+  .vbox input{width:100%;background:#171722;border:1px solid #2c2c40;border-radius:9px;padding:11px 13px;color:#f2eee6;font-size:13px;outline:none;margin-top:8px}
+  .vbox .hint{font-size:12px;color:#8d8da3;line-height:1.8;margin-top:10px}
+  .vbox .btns{display:flex;gap:10px;margin-top:14px}
+  .vbox button{flex:1;padding:11px;border-radius:9px;font-weight:700;cursor:pointer;border:none;font-size:13px}
+  .vbox .save{background:#e8b34b;color:#1a1206}
+  .vbox .clear{background:transparent;border:1px solid #2c2c40;color:#9a9ab0}
+  .empty{text-align:center;color:#8d8da3;padding:60px 0}
+  .toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1e1e2c;color:#f5d98a;border:1px solid #e8b34b;border-radius:20px;padding:8px 20px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:200}
+  .toast.show{opacity:1}
+  .top-btn{position:fixed;right:18px;bottom:18px;z-index:60;background:#e8b34b;color:#1a1206;border:none;border-radius:22px;padding:11px 18px;font-weight:800;cursor:pointer;display:none}
+  @media(max-width:620px){.hero h1{font-size:24px;letter-spacing:6px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>电影镜头图鉴 PRO</h1>
+  <p>景别 · 角度 · 运镜 · 焦段 · 光线 · 电商应用 —— 每个镜头可挂示范视频</p>
+  <div class="stats">
+    <div><b>6</b><span>大分类</span></div>
+    <div><b>34</b><span>镜头语言</span></div>
+    <div><b id="vCount">0</b><span>已挂视频</span></div>
+  </div>
+</div>
+
+<div class="bar">
+  <input id="q" placeholder="搜索：特写、环绕、仰拍…">
+  <span class="chip on" data-f="all">全部</span>
+  <span class="chip" data-f="景别">景别</span>
+  <span class="chip" data-f="角度">角度</span>
+  <span class="chip" data-f="运镜">运镜</span>
+  <span class="chip" data-f="焦段">焦段</span>
+  <span class="chip" data-f="光线">光线</span>
+  <span class="chip" data-f="电商">电商拍摄</span>
+  <span class="chip" data-f="video">🎬 已有视频</span>
+</div>
+
+<div class="wrap" id="list"></div>
+<button class="top-btn" id="topBtn">↑ 顶部</button>
+
+<div class="modal" id="modal">
+  <div class="mbox">
+    <h3 id="mName"></h3>
+    <div class="en" id="mEn"></div>
+    <div class="mvideo" id="mVideo"></div>
+    <dl id="mBody"></dl>
+    <button class="close" onclick="closeModal()">关 闭</button>
+  </div>
+</div>
+
+<div class="modal" id="vmodal">
+  <div class="mbox vbox">
+    <h3 style="font-size:18px">🎬 设置示范视频</h3>
+    <div class="en" id="vTarget"></div>
+    <input id="vUrl" placeholder="粘贴视频链接…">
+    <div class="hint">支持 B站 / YouTube / mp4 直链（可内嵌直接播放）；抖音链接会存为「新窗口打开」。<br>保存只存在你自己的浏览器里，随时可清除。</div>
+    <div class="btns">
+      <button class="clear" onclick="clearV()">清 除</button>
+      <button class="save" onclick="saveV()">保 存</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var D=[
+{f:"景别",c:"gold",no:"景别01",n:"大远景",en:"EXTREME LONG SHOT",s:"人物极小，环境占绝对主体，交代地理与时代氛围",u:"开场定场",d:["无人机高空或超广角站位，人物只占画面5%以下","交代故事发生的环境、季节、规模","产地溯源/工厂实拍可做开场：棉田、织造车间大场景","配缓慢推镜或固定机位+环境音"]},
+{f:"景别",c:"gold",no:"景别02",n:"远景",en:"LONG SHOT",s:"人物全身可见，环境清晰，人与场景关系完整",u:"交代场景",d:["全身入画，头顶和脚底留空间，地平线注意水平","说明谁在什么地方做什么","模特全身穿搭展示：外搭连衣裙、裤子整体线条","模特走动+缓慢跟移"]},
+{f:"景别",c:"gold",no:"景别03",n:"全景",en:"FULL SHOT",s:"人物顶天立地占满画框，重点看全身动作",u:"动作展示",d:["画框上沿头顶留少量空间，下沿贴脚踝","突出肢体语言和完整动作","试穿展示、转身动作、走位展示服装垂感","音乐卡点，一镜一动作"]},
+{f:"景别",c:"gold",no:"景别04",n:"中景",en:"MID SHOT",s:"膝盖以上，兼顾表情与手势",u:"叙事主力",d:["腰部到膝盖之间下刀最自然，避免切关节","对话讲解的主力景别","真人口播主力景别：讲解产品、试穿对比","口播+手持轻微呼吸感"]},
+{f:"景别",c:"gold",no:"景别05",n:"近景",en:"CLOSE SHOT",s:"胸口以上，表情细节开始放大",u:"情绪传递",d:["镜头与眼睛齐平，背景虚化突出人物","看清表情，建立信任感","主播讲到关键卖点时的面部特写，增强信任","与中景穿插使用"]},
+{f:"景别",c:"gold",no:"景别06",n:"特写",en:"CLOSE-UP",s:"面部或物体局部充满画面",u:"细节放大",d:["微距或长焦贴近，对焦在最有信息量的点","把观众视线钉在一个细节上","核心景别！腰头拉伸、蝴蝶结加压带、星点提花、桑蚕丝底裆","手入画指点+慢推近"]},
+{f:"景别",c:"gold",no:"景别07",n:"大特写",en:"EXTREME CLOSE-UP",s:"极小局部：睫毛、针脚、纤维",u:"质感冲击",d:["微距镜头，浅景深，缓慢移动对焦点","制造极致质感与视觉冲击","提花纱线纤维、面料切面、车缝线迹——贵感靠大特写堆出来","慢速平移+布光侧打"]},
+{f:"角度",c:"red",no:"角度01",n:"平拍",en:"EYE LEVEL",s:"镜头与主体同高，客观、平等、日常",u:"客观叙述",d:["相机高度与被摄者视线齐平","最中性最真实的视角，像朋友在说话","口播默认角度，真实感强不装","任何景别都适用"]},
+{f:"角度",c:"red",no:"角度02",n:"仰拍",en:"LOW ANGLE",s:"镜头低于主体向上拍，显得高大有气势",u:"塑造气场",d:["机位降到腰部以下，镜头微抬","让人物产品显得高大、权威","模特显高显腿长；产品仰拍显高级","广角+仰拍=大长腿公式"]},
+{f:"角度",c:"red",no:"角度03",n:"俯拍",en:"HIGH ANGLE",s:"镜头高于主体向下拍，主体被展示",u:"展示布局",d:["机位举高或站梯子，镜头下压","交代空间关系，营造审视感","平铺产品摆拍、多色陈列、穿搭全貌俯视","顶部打光+浅背景"]},
+{f:"角度",c:"red",no:"角度04",n:"顶拍",en:"TOP DOWN",s:"正上方90度垂直向下",u:"构图游戏",d:["俯拍架或无人机正下方，注意水平","强迫症式整齐构图，视觉冲击强","产品+道具平铺摆拍（flat lay）、多色一字排开","黄金比例摆位+卡点音乐"]},
+{f:"角度",c:"red",no:"角度05",n:"荷兰角",en:"DUTCH ANGLE",s:"画面故意倾斜，制造不安与动感",u:"情绪渲染",d:["机身侧倾15-45度","紧张、混乱、炫酷氛围","运动健身类产品、快节奏混剪卡点","短促使用，多则会晕"]},
+{f:"角度",c:"red",no:"角度06",n:"过肩镜头",en:"OVER THE SHOULDER",s:"越过一人肩膀拍另一人",u:"对话机位",d:["前景肩膀虚化占1/3，焦点在后一人","建立对话关系和空间感","闺蜜对话剧情、买卖场景演绎","正反打剪辑"]},
+{f:"运镜",c:"blue",no:"运镜01",n:"推镜头",en:"PUSH IN",s:"镜头缓慢接近主体，注意力聚焦",u:"进入重点",d:["滑轨/稳定器前移，或变焦推近","从环境到主体的心理聚焦","讲核心卖点前的进入镜头：从整体推向腰头细节","近景→特写连用"]},
+{f:"运镜",c:"blue",no:"运镜02",n:"拉镜头",en:"PULL OUT",s:"镜头远离主体，从局部到环境",u:"揭示全貌",d:["滑轨后移或变焦拉远","先给悬念细节，再揭示全貌","从提花纹理拉开→整裤全貌，制造惊喜","特写开场视频标配"]},
+{f:"运镜",c:"blue",no:"运镜03",n:"摇镜头",en:"PAN",s:"机位不动，镜头左右扫",u:"巡览展示",d:["三脚架水平摇，匀速","模拟人眼环视，交代空间","多色产品一字排开逐一扫过","摇到某个颜色停住+卡点"]},
+{f:"运镜",c:"blue",no:"运镜04",n:"移镜头",en:"TRUCKING",s:"机位整体平行移动",u:"跟随视线",d:["滑轨/稳定器侧移","展示产品侧面纵深与立体感","产品侧移展示腰头宽度、裤型弧线","前景放遮挡物产生视差更有电影感"]},
+{f:"运镜",c:"blue",no:"运镜05",n:"跟镜头",en:"FOLLOW SHOT",s:"跟在主体后面或侧面同步移动",u:"沉浸跟随",d:["稳定器跟随，保持固定距离","观众变成跟在身边的人，代入感强","模特走动试穿、通勤场景剧情","跟拍+场景音"]},
+{f:"运镜",c:"blue",no:"运镜06",n:"升降镜头",en:"CRANE",s:"机位垂直上升或下降",u:"气势转换",d:["升降架/无人机垂直移动","视野突然打开或收拢，段落感强","从桌面产品拉升到模特全身，氛围升级","段落转场用"]},
+{f:"运镜",c:"blue",no:"运镜07",n:"环绕镜头",en:"ORBIT",s:"绕主体360度或弧线旋转",u:"全方位展示",d:["稳定器绕主体走弧线，或转盘+固定机位","全方位展示，高级感最强","模特旋转展示、产品转台环绕——高客单必备","慢环绕+氛围音乐"]},
+{f:"运镜",c:"blue",no:"运镜08",n:"手持镜头",en:"HANDHELD",s:"手持拍摄，自然晃动",u:"纪实感",d:["肩扛或手持，晃动要有节奏","真实、临场、紧张感","开箱视角、第一视角拿取产品、工厂探访","配轻微环境音效"]},
+{f:"运镜",c:"blue",no:"运镜09",n:"甩镜头",en:"WHIP PAN",s:"极快速横甩造成动态模糊",u:"炫酷转场",d:["快速甩动，两段甩镜剪辑拼接","转场利器，节奏炸裂","混剪卡点常用：甩镜切换颜色/场景","加whoosh音效"]},
+{f:"运镜",c:"blue",no:"运镜10",n:"希区柯克变焦",en:"DOLLY ZOOM",s:"机位后退+变焦推进，背景变形主体不变",u:"眩晕效果",d:["匀速后退同时变焦反向补偿","空间扭曲的震撼感","创意开场、制造记忆点","创意开场、制造记忆点","慎用，一条视频用一次足够"]},
+{f:"焦段",c:"green",no:"焦段01",n:"广角",en:"WIDE 16-35mm",s:"视野宽，有张力，边缘会拉伸变形",u:"空间气势",d:["靠近主体，注意边缘畸变构图","空间显大、人显高、气势足","模特全身显高显腿长、场景空间展示","仰拍+广角=大长腿"]},
+{f:"焦段",c:"green",no:"焦段02",n:"标准",en:"STANDARD 35-50mm",s:"接近人眼视角，真实自然",u:"真实叙述",d:["最不易出错的焦段","无夸张无变形，观众最舒适","口播、剧情、日常场景万能焦段","光圈f/1.8-2.8背景微虚化"]},
+{f:"焦段",c:"green",no:"焦段03",n:"中长焦",en:"TELE 85-135mm",s:"背景压缩、强烈虚化、人物立体",u:"高级人像",d:["离模特远一些，压缩前后景","人像王焦段，气质拉满","模特展示的高级感镜头","大光圈+侧逆光"]},
+{f:"焦段",c:"green",no:"焦段04",n:"长焦",en:"LONG TELE 200mm+",s:"超远摄，极度压缩空间",u:"压缩感",d:["需要防抖，注意对焦精度","背景拉成色块，主体极突出","街拍场景虚化人群、突出模特穿搭","前后景色彩对比"]},
+{f:"焦段",c:"green",no:"焦段05",n:"微距",en:"MACRO",s:"1:1以上放大倍率，纤毫毕现",u:"质感细节",d:["微距镜头或近摄镜，浅景深","材质纹理放大成视觉大餐","提花纱线、桑蚕丝光泽、面料切面——质感类视频核心","慢速移焦 focus pulling"]},
+{f:"光线",c:"purple",no:"光线01",n:"自然光",en:"NATURAL LIGHT",s:"日光/窗光直接拍摄",u:"真实氛围",d:["窗边侧光最优，避开正午顶光","真实、柔和、代入感强","居家场景、日系风格、买家秀视角","反光板补暗部"]},
+{f:"光线",c:"purple",no:"光线02",n:"侧光",en:"SIDE LIGHT",s:"光从侧面打来，明暗分明",u:"立体质感",d:["主光源45-90度侧位","强化材质纹理与立体感","提花纹理、腰头立体结构——侧光下纹理立现","暗部加弱补光保留细节"]},
+{f:"光线",c:"purple",no:"光线03",n:"逆光",en:"BACKLIGHT",s:"光源在主体后方，勾出轮廓光",u:"氛围神光",d:["对主体面部曝光，轮廓金边自然出现","发丝金边、氛围感、高级感","模特发丝光、产品边缘高光——轻奢感布光","正面加LEC弱补光提脸部"]},
+{f:"光线",c:"purple",no:"光线04",n:"顶光",en:"TOP LIGHT",s:"光从正上方打下",u:"戏剧效果",d:["注意眼窝鼻影，配合柔光箱","舞台感、压迫感","产品展台打光、紧张剧情","眼神光补一张白卡"]},
+{f:"光线",c:"purple",no:"光线05",n:"三点布光",en:"THREE POINT",s:"主光+辅光+轮廓光经典组合",u:"标准人像",d:["主光45度侧前、辅光对侧弱、轮廓光身后上方","人像教科书布光，不翻车","口播、直播间、讲解类标准布光","色温统一5500K或3200K"]},
+{f:"光线",c:"purple",no:"光线06",n:"霓虹氛围光",en:"NEON RGB",s:"彩色氛围灯打背景或轮廓",u:"潮酷氛围",d:["RGB灯管放背景侧后，前景正常曝光","夜店感、科技感、年轻化","运动、年轻向产品、卡点混剪","冷暖对比最出效果"]},
+{f:"电商",c:"pink",no:"电商01",n:"口播机位",en:"TALKING HEAD",s:"中近景+标准布光+提词器",u:"讲解类视频",d:["50mm左右、平拍、三点布光、背景简单","信任感最强的基础配置","卖点讲解、上新通知、福利预告","每30秒插入一个产品特写防跳出"]},
+{f:"电商",c:"pink",no:"电商02",n:"产品转台",en:"TURNTABLE",s:"产品置于旋转台360度展示",u:"全方位展示",d:["电动转盘+固定机位+纯色背景","低成本做出环绕高级感","内裤平铺旋转、多色轮播","黑白背景+侧光突出轮廓"]},
+{f:"电商",c:"pink",no:"电商03",n:"手部特写流",en:"HAND MODEL",s:"只有手入画，逐个展示细节",u:"细节种草",d:["微距+侧光，手部干净动作利落","专注产品本身，细节可信度高","腰头拉伸回弹、面料揉搓、车缝细节逐个展示","一镜一动作，快剪"]},
+{f:"电商",c:"pink",no:"电商04",n:"试穿对比流",en:"BEFORE / AFTER",s:"左右分屏或前后切换对比",u:"效果可视化",d:["同机位同焦段拍两组，剪辑严格对齐","效果一目了然，转化利器","普通内裤vs本款：坐下分层、卷边对比","对比前低沉音乐，对比后扬起"]},
+{f:"电商",c:"pink",no:"电商05",n:"剧情植入流",en:"SCENE PLUG",s:"产品作为剧情道具自然出现",u:"软性种草",d:["先拍剧情镜头，产品镜头单独补拍插入","降低广告感，看完才意识到是广告","闺蜜问裙子显不显肚子→拿出产品","产品特写插在对话高潮点"]},
+{f:"电商",c:"pink",no:"电商06",n:"氛围卡点流",en:"BPM MONTAGE",s:"多镜头按音乐节拍快切",u:"颜值展示",d:["每个镜头1-2秒，动作预留卡点帧","节奏感强、完播率高","节奏感强、完播率高","五色展示、多场景快剪、新品上市","卡点帧=动作转折点，不是随机切"]}
+];
+
+var COLORS={gold:"#e8b34b",red:"#ff5c47",blue:"#5aa2ff",green:"#3ecf8e",purple:"#b47aff",pink:"#ff6aa8"};
+var USEBG={gold:"rgba(232,179,75,.13)",red:"rgba(255,92,71,.12)",blue:"rgba(90,162,255,.12)",green:"rgba(62,207,142,.12)",purple:"rgba(180,122,255,.12)",pink:"rgba(255,106,168,.12)"};
+var VKEY="lens_videos_v2";
+var DEFV={
+"景别01":"https://www.bilibili.com/video/BV18E411q7yb",
+"景别02":"https://www.bilibili.com/video/BV1kPpMzwEj3",
+"景别03":"https://www.bilibili.com/video/BV1Zt421K7Ub",
+"景别04":"https://www.bilibili.com/video/BV1Zt421K7Ub",
+"景别05":"https://www.bilibili.com/video/BV1XaWuzREL9",
+"景别06":"https://www.bilibili.com/video/BV11W4y1N7Fn",
+"景别07":"https://www.bilibili.com/video/BV1EV4y177R4",
+"角度01":"https://www.bilibili.com/video/BV1dR4y1x7zr",
+"角度02":"https://www.bilibili.com/video/BV1bz4y1T7Fu",
+"角度03":"https://www.bilibili.com/video/BV1n54y1j74x",
+"角度04":"https://www.bilibili.com/video/BV1n54y1j74x",
+"角度05":"https://www.bilibili.com/video/BV1wt411o7dr",
+"角度06":"https://www.bilibili.com/video/BV1n34y1h7jf",
+"运镜01":"https://www.bilibili.com/video/BV1zc411m7WA",
+"运镜02":"https://www.bilibili.com/video/BV1fcD5YKE5z",
+"运镜03":"https://www.bilibili.com/video/BV1jr4y167tH",
+"运镜04":"https://www.bilibili.com/video/BV1T6RxBWExZ",
+"运镜05":"https://www.bilibili.com/video/BV1fcD5YKE5z",
+"运镜06":"https://www.bilibili.com/video/BV12b4y1u7CG",
+"运镜07":"https://www.bilibili.com/video/BV1i14y1M7Hf",
+"运镜08":"https://www.bilibili.com/video/BV1f54y1578G",
+"运镜09":"https://www.bilibili.com/video/BV1w7N9efEoP",
+"运镜10":"https://www.bilibili.com/video/BV1vt411q7q6",
+"焦段01":"https://www.bilibili.com/video/BV1Ki421R732",
+"焦段02":"https://www.bilibili.com/video/BV1Ki421R732",
+"焦段03":"https://www.bilibili.com/video/BV1PFVj6sE62",
+"焦段04":"https://www.bilibili.com/video/BV1Uj9rBcEzH",
+"焦段05":"https://www.bilibili.com/video/BV18TSmY7EqQ",
+"光线01":"https://www.bilibili.com/video/BV14t2VBeE4b",
+"光线02":"https://www.bilibili.com/video/BV1HD4y167Dv",
+"光线03":"https://www.bilibili.com/video/BV1eJ411d7iJ",
+"光线04":"https://www.bilibili.com/video/BV1Dt411r7hA",
+"光线05":"https://www.bilibili.com/video/BV1NLHczmEuZ",
+"光线06":"https://www.bilibili.com/video/BV1GBDSYZEAd",
+"电商01":"https://www.bilibili.com/video/BV1o1po67E87",
+"电商02":"https://www.bilibili.com/video/BV1VA411W789",
+"电商03":"https://www.bilibili.com/video/BV19A411V7nm",
+"电商04":"https://www.bilibili.com/video/BV1v24y1T7Bi",
+"电商05":"https://www.bilibili.com/video/BV1sHvvBZECT",
+"电商06":"https://www.bilibili.com/video/BV1J1Vc6BESA"
+};
+var videos={};
+try{ videos=JSON.parse(localStorage.getItem(VKEY)||"{}"); }catch(e){ videos={}; }
+for(var dk in DEFV){ if(!videos[dk]) videos[dk]=DEFV[dk]; }
+var filter="all", kw="", editNo=null;
+
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.className="toast show";setTimeout(function(){t.className="toast";},1600);}
+function persistV(){localStorage.setItem(VKEY,JSON.stringify(videos));document.getElementById("vCount").textContent=Object.keys(videos).length;}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+function embedUrl(url){
+  var m;
+  if(url.indexOf("youtube.com")>=0){ m=url.match(/[?&]v=([\w-]+)/); if(m)return"https://www.youtube.com/embed/"+m[1]; m=url.match(/shorts\/([\w-]+)/); if(m)return"https://www.youtube.com/embed/"+m[1]; }
+  if(url.indexOf("youtu.be/")>=0){ m=url.match(/youtu\.be\/([\w-]+)/); if(m)return"https://www.youtube.com/embed/"+m[1]; }
+  if(url.indexOf("bilibili.com")>=0){ m=url.match(/BV\w+/); if(m)return"https://player.bilibili.com/player.html?bvid="+m[0]+"&autoplay=0"; }
+  if(/\.(mp4|webm)(\?|$)/i.test(url)) return url;
+  return "";
+}
+function vslotHTML(no){
+  var url=videos[no]||"";
+  var inner="";
+  if(url){
+    var e=embedUrl(url);
+    if(e.indexOf(".mp4")>0||e.indexOf(".webm")>0){ inner='<video src="'+esc(e)+'" controls preload="metadata"></video>'; }
+    else if(e){ inner='<iframe src="'+esc(e)+'" allowfullscreen loading="lazy"></iframe>'; }
+    else{ inner='<div class="vempty" style="color:#f5d98a"><div class="play">↗</div><div class="txt">已存链接 · 点击卡片打开</div></div>'; }
+  }else{
+    inner='<div class="vempty"><div class="play">▶</div><div class="txt">示范视频位 · 右上角＋设置</div></div>';
+  }
+  return '<div class="vslot"><span class="vtag">'+(url?"🎬 示范":"视频位")+'</span>'+
+    '<span class="vedit" onclick="openV(event,\''+no+'\')">＋设视频</span>'+inner+'</div>';
+}
+function cardHTML(x){
+  var ac=COLORS[x.c];
+  return '<div class="card" style="--ac:'+ac+'" onclick="openM(\''+x.no+'\')">'+
+    vslotHTML(x.no)+
+    '<div class="cbody">'+
+    '<div class="no">'+x.f+' · '+x.u+'</div>'+
+    '<h3>'+esc(x.n)+'</h3>'+
+    '<div class="en-name">'+esc(x.en)+'</div>'+
+    '<p>'+esc(x.s)+'</p>'+
+    '<span class="use" style="color:'+ac+';background:'+USEBG[x.c]+'">▸ '+esc(x.u)+'</span>'+
+    '</div></div>';
+}
+function render(){
+  var groups=["景别","角度","运镜","焦段","光线","电商"];
+  var html="";
+  var total=0;
+  for(var g=0;g<groups.length;g++){
+    var name=groups[g];
+    if(filter!=="all"&&filter!=="video"&&filter!==name)continue;
+    var items=[];
+    for(var i=0;i<D.length;i++){
+      var x=D[i];
+      if(x.f!==name)continue;
+      if(kw&&(x.n+" "+x.en+" "+x.s+" "+x.u+" "+x.d.join(" ")).toLowerCase().indexOf(kw)<0)continue;
+      if(filter==="video"&&!videos[x.no])continue;
+      items.push(x);
+    }
+    if(!items.length)continue;
+    total+=items.length;
+    html+='<div class="sec"><h2>'+name+'<span class="cnt">'+items.length+' 个</span></h2><div class="grid">';
+    for(var j=0;j<items.length;j++){ html+=cardHTML(items[j]); }
+    html+='</div></div>';
+  }
+  document.getElementById("list").innerHTML=total?html:'<div class="empty">没有匹配的镜头，换个关键词试试</div>';
+}
+function openM(no){
+  var x=null;
+  for(var i=0;i<D.length;i++){ if(D[i].no===no){x=D[i];break;} }
+  if(!x)return;
+  document.getElementById("mName").textContent=x.n;
+  document.getElementById("mEn").textContent=x.en+" · "+x.f+" · "+x.u;
+  var url=videos[no]||"";
+  var mv=document.getElementById("mVideo");
+  if(url){
+    var e=embedUrl(url);
+    if(e.indexOf(".mp4")>0||e.indexOf(".webm")>0){ mv.innerHTML='<video src="'+esc(e)+'" controls autoplay></video>'; }
+    else if(e){ mv.innerHTML='<iframe src="'+esc(e)+'" allowfullscreen></iframe>'; }
+    else{ mv.innerHTML='<div class="vempty" style="color:#f5d98a"><div class="play">↗</div><div class="txt">该平台不允许嵌入 · <a href="'+esc(url)+'" target="_blank">点此新窗口打开视频 ↗</a></div></div>'; }
+  }else{
+    mv.innerHTML='<div class="vempty"><div class="play">▶</div><div class="txt">还没有示范视频 · 关闭后在卡片右上角「＋设视频」</div></div>';
+  }
+  document.getElementById("mBody").innerHTML=
+    '<dt>� 句话理解</dt><dd>'+esc(x.s)+'</dd>'+
+    '<dt>怎么拍</dt><dd>'+esc(x.d[0])+'</dd>'+
+    '<dt>什么作用</dt><dd>'+esc(x.d[1])+'</dd>'+
+    '<dt>电商怎么用</dt><dd>'+esc(x.d[2])+'</dd>'+
+    '<dt>搭配建议</dt><dd>'+esc(x.d[3])+'</dd>';
+  document.getElementById("modal").className="modal show";
+}
+function closeModal(){ document.getElementById("modal").className="modal"; document.getElementById("mVideo").innerHTML=""; }
+function openV(ev,no){
+  if(ev.stopPropagation)ev.stopPropagation();
+  editNo=no;
+  var x=null;
+  for(var i=0;i<D.length;i++){ if(D[i].no===no){x=D[i];break;} }
+  document.getElementById("vTarget").textContent=no+" "+x.n;
+  document.getElementById("vUrl").value=videos[no]||"";
+  document.getElementById("vmodal").className="modal show";
+}
+function saveV(){
+  var v=document.getElementById("vUrl").value.replace(/^\s+|\s+$/g,"");
+  if(v){ videos[editNo]=v; } else { delete videos[editNo]; }
+  persistV(); closeV(); render();
+  toast(v?"示范视频已保存 ✅":"已清除");
+}
+function clearV(){ delete videos[editNo]; persistV(); closeV(); render(); toast("已清除"); }
+function closeV(){ document.getElementById("vmodal").className="modal"; }
+
+var chips=document.querySelectorAll(".chip");
+for(var ci=0;ci<chips.length;ci++){
+  chips[ci].onclick=function(){
+    for(var k=0;k<chips.length;k++)chips[k].className="chip";
+    this.className="chip on";
+    filter=this.getAttribute("data-f");
+    render();
+  };
+}
+document.getElementById("q").oninput=function(e){ kw=e.target.value.toLowerCase(); render(); };
+document.getElementById("modal").onclick=function(ev){ if(ev.target===this)closeModal(); };
+document.getElementById("vmodal").onclick=function(ev){ if(ev.target===this)closeV(); };
+document.getElementById("topBtn").onclick=function(){ window.scrollTo(0,0); };
+window.onscroll=function(){ document.getElementById("topBtn").style.display=window.scrollY>500?"block":"none"; };
+document.onkeydown=function(e){ if(e.key==="Escape"){closeModal();closeV();} };
+
+persistV();
+render();
+</script>
+</body>
+</html>
